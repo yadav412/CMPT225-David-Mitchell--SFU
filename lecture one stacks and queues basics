@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stack>
 #include <cstring>
+#include <queue> 
 
 
 using namespace std;
@@ -21,6 +22,20 @@ int main()
 	cout<<d.empty()<<endl; //returns a boolean value - 0 returned 
 	cout<<d.top()<<endl ; //'i' value returned
 
+	queue<int> f; 
+
+	f.push(5);
+	f.push(9);
+	f.push(8);
+	cout <<f.front()<<endl;// produces 5 
+	cout <<f.back()<<endl;//produces 8
+
+	queue<char> g;
+
+	g.push('g');
+
+	cout<<g.back()<<endl;
+	cout<<g.size();
 
 	system("pause");
 	return 0;
