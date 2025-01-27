@@ -1,0 +1,27 @@
+#include <iostream>
+#include <stack>
+#include <cstring>
+
+
+using namespace std;
+
+
+int main()
+{
+	stack<int> s;
+	s.push(6);//6
+	s.pop();//
+	s.push(9);//9
+	s.push(1);// 1,9
+
+	cout<<s.top()<<endl;// returns 1
+
+	stack<char> d;
+	d.push('i');//'i'
+	cout<<d.empty()<<endl; //returns a boolean value - 0 returned 
+	cout<<d.top()<<endl ; //'i' value returned
+
+
+	system("pause");
+	return 0;
+}
