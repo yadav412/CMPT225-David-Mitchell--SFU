@@ -1,0 +1,60 @@
+#include <iostream>
+#include <stack>
+#include <queue>
+#include <cstring>
+#include <string>
+
+
+using namespace std;
+
+
+bool palindrome_checker(const string val)
+{
+	queue<char> v1;
+	stack<char> s1;
+	int y =val.size();
+
+	for (int i =0; i<y; i++)
+	{
+		v1.push(val[i]);
+		s1.push(val[i]);
+	}
+
+	if(val.size()==1)
+	{
+		return true;
+	}
+
+
+	while(v1.size()>0)
+	{
+		if (v1.front()==s1.top())
+		{
+			v1.pop();
+			s1.pop();
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return true;
+
+}
+	
+int main()
+{
+	//stack and queue palidrome checker 
+
+	string val;
+
+	cin>>val;
+
+	cout<<palindrome_checker(val);
+
+
+	
+	system("pause");
+	return 0;
+}
