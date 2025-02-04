@@ -1,0 +1,25 @@
+all: test
+
+test: test.o
+	g++ -Wall -o test test.o  
+
+test.o: AlistTest.cpp Alist.h 
+	g++ -Wall -o test.o -c AlistTest.cpp 
+
+test.o: TestRemoveRight.cpp Alist.h 
+	g++ -Wall -o test.o -c TestRemoveRight.cpp 
+
+test.o: TestRemoveLeft.cpp Alist.h 
+	g++ -Wall -o test.o -c TestRemoveLeft.cpp 
+
+
+test.o: TestAddRight.cpp Alist.h 
+	g++ -Wall -o test.o -c TestAddRight.cpp 
+
+test.o: TestAddLeft.cpp Alist.h 
+	g++ -Wall -o test.o -c TestAddLeft.cpp 
+
+clean:
+	rm -f test *.o
+
+

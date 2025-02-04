@@ -1,0 +1,138 @@
+/******************************************************************
+/******************************************************************
+** 
+**   AList Class, Assignment 1 Part B
+**
+**   File: AList.h
+** 
+**   Copyright © 2025, Yadav Singh.  All rights reserved.
+**  
+*******************************************************************
+******************************************************************/
+class AList 
+{
+  public:
+    AList()
+      {  
+         theCapacity = 12 ;
+         objects = new Object[ theCapacity ]; 
+         theSize = 0 ;
+         left = 0 ; // array index of location just before the left-most list element 
+         right = 1 ; // array index just past the right-most list element
+      }
+      
+    ~AList( )
+      { delete [ ] objects; }
+
+    bool empty( ) const  { return size( ) == 0; }
+    int size( ) const { return theSize; }
+    void clear( ){
+        theSize = 0;
+        left = 0 ;
+        right = 1 ;
+    }
+
+    // Operations 
+
+    void addLeft( const Object x )
+    // Insert a new object at the left end 
+	// functionality (1) - add element to left of AList 
+	// functionality (0) -throws the assert function as the capacity of AList has been exceeded 
+
+	// (for this function to work the list must be not at capacity if it is the assert function is activated)
+	// condition (theSize< theCapacity) must be (1) to run 
+	
+    {
+		assert(( theSize< theCapacity)&& "the size should not exceed the capacity, program has exceeded the Alist capacity");
+		theSize++ ;
+        objects[left] = x ;
+        left = (left-1);
+        if( left < 0 ) left = theCapacity-1 ;
+    }
+
+    void addRight( const Object x )
+    // Insert a new object at the right end
+	// functionality (1) - add element to right of AList 
+	// functionality (0) -throws the assert function as the capacity of AList has been exceeded 
+
+	// (for this function to work the list must be not at capacity if it is the assert function is activated)
+	// condition (theSize< theCapacity) must be (1) to run else will fail 
+	// much like the add left function if value is add that goes beyond the capacity assert is thrown
+	// theSize> capacity
+	
+    {
+		assert(( theSize< theCapacity)&&"the size should not exceed the capacity, program has exceeded Alist capacity"); //size > cap throws assert
+        theSize ++ ;
+		objects[right] = x ;
+        right = (right+1) % theCapacity ;
+    }
+
+    Object removeRight( )
+    // Remove and return the object at the right end
+	// if thesize of the funtion is 0 and an element is removed this is an impossible function therefore the assert function will be thrown out
+	// the remove function should not be able to operation within the bounds of an "empty" alist
+    {
+
+		assert("attempted value removal from empty Alist" && (theSize>0) ); // size = 0 throws assert
+        theSize -- ;
+        right = right - 1 ;
+        if( right < 0 ) right = theCapacity-1 ;
+        return objects[right]; 
+    }
+
+    Object removeLeft( )
+    // Remove and return the object at the left end
+	// if thesize of the funtion is 0 and an element is removed this is an impossible function therefore the assert function will be thrown out
+	// the remove function should not be able to operation within the bounds of an "empty" alist
+    {
+		assert( "attempted value removal from empty Alist" && (theSize>0) );// size= 0 throws assert
+        theSize -- ;
+        left = ( left+1 ) % theCapacity ;
+        return objects[left] ;
+    }
+
+    void display() const 
+    // print out the contents of the deque
+    {
+        cout << "<" ;
+        if( theSize > 0 ){
+           int i = ( left+1 ) % theCapacity ;
+           for( int j = 0 ; j < theSize-1 ; j++ ){
+               cout << objects[i] << "," ;
+               i = ( i + 1 ) % theCapacity ;
+           }
+           cout << objects[i];
+        }
+        cout << ">\n" ;
+
+    }
+
+    void ddisplay() const 
+    // print out the contents of the objects 
+    // array, and relevant variables, for debugging or verifying correctness. 
+    {
+        cout << "left=" << left << ", right=" << right << ", size=" << theSize << ", capacity=" << theCapacity << endl ;
+
+        cout << "[ " ;
+        for( int i = 0 ; i < theCapacity-1 ; i++ ){
+           cout << objects[i] << ", " ;
+        }
+        cout << objects[theCapacity-1] << " ]" << endl ;
+
+        cout << "[ " ;
+        for( int i = 0 ; i < theCapacity-1 ; i++ ){
+           cout << i << ", " ;
+        }
+        cout << theCapacity << " ]" << endl ;
+    }
+
+
+  private:
+    int theSize;
+    int left;
+    int right;
+    int theCapacity;
+    Object * objects;
+};
+
+#endif
