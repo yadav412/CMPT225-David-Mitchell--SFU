@@ -170,3 +170,20 @@ private:
         static hash<ValType> hf;
         return hf(x) % tableSize;
     }
+
+
+
+
+    if (n <= 1) return 2;
+    
+    auto isPrime = [](int num) {
+        if (num < 2) return false;
+        if (num % 2 == 0 && num != 2) return false;
+        for (int i = 3; i * i <= num; i += 2)
+            if (num % i == 0) return false;
+        return true;
+    };
+    
+    while (!isPrime(n)) ++n;
+    return n;
+}
