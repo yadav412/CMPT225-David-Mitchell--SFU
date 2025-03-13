@@ -33,3 +33,14 @@ In file included from /home/ysa306/Desktop/ans 2/TestBiMap.cpp:2:
   143 |     void rehash() {
       |          ^~~~~~
 /home/ysa306/Desktop/ans 2/BiMap.h:143:10: note:   candidate expects 0 arguments, 2 provided
+
+
+
+/usr/bin/g++ -fdiagnostics-color=always -g '/home/ysa306/Desktop/ans 2/TestBiMap.cpp' -o '/home/ysa306/Desktop/ans 2/TestBiMap'
+/usr/bin/ld: /tmp/ccKeIFGF.o: in function `BiMap<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int>::BiMap(int)':
+/home/ysa306/Desktop/ans 2/BiMap.h:18: undefined reference to `nextPrime(int)'
+/usr/bin/ld: /home/ysa306/Desktop/ans 2/BiMap.h:18: undefined reference to `nextPrime(int)'
+/usr/bin/ld: /tmp/ccKeIFGF.o: in function `BiMap<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int>::rehash()':
+/home/ysa306/Desktop/ans 2/BiMap.h:162: undefined reference to `nextPrime(int)'
+/usr/bin/ld: /home/ysa306/Desktop/ans 2/BiMap.h:163: undefined reference to `nextPrime(int)'
+collect2: error: ld returned 1 exit status
