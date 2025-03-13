@@ -68,31 +68,38 @@ private:
     };
 
     // Inner class representing the map
-    class HMap {
-    public:
-        std::vector<std::pair<std::string, int>> map;  // Map of taskid to index
+class HMap {
+public:
+    std::vector<std::pair<std::string, int>> map;  // (taskid, heap index)
 
-        int find(const std::string& taskid) {
-            for (int i = 0; i < map.size(); ++i) {
-                if (map[i].first == taskid) {
-                    return i;  // Return index of task
-                }
+    int find(const std::string& taskid) {
+        for (int i = 0; i < map.size(); ++i) {
+            if (map[i].first == taskid) {
+                return map[i].second;  // Return heap index
             }
-            return -1;  // Task not found
         }
+        return -1;  // Not found
+    }
 
-        void insert(const std::string& taskid, int index) {
+    bool exists(const std::string& taskid) {
+        return find(taskid) != -1;  // If find() returns valid index, task exists
+    }
+
+    void insert(const std::string& taskid, int index) {
+        if (!exists(taskid)) {  // Only insert if not already present
             map.push_back(std::make_pair(taskid, index));
         }
+    }
 
-        void remove(const std::string& taskid) {
-            int index = find(taskid);
-            if (index != -1) {
-                map.erase(map.begin() + index);  // Remove the task from the map
+    void remove(const std::string& taskid) {
+        for (int i = 0; i < map.size(); ++i) {
+            if (map[i].first == taskid) {
+                map.erase(map.begin() + i);
+                return;
             }
         }
-    };
-
+    }
+};
     Heap heap;  // Instance of the Heap class
     HMap map;   // Instance of the HMap class
 
@@ -100,6 +107,10 @@ public:
     IndPQ() {}
 
     void insert(const std::string& taskid, int priority) {
+        if (map.exists(taskid)) {
+        std::cout << "Error: Task '" << taskid << "' already exists!" << std::endl;
+        return;  // Prevent duplicate insertion
+    }
         heap.insert(taskid, priority);
         map.insert(taskid, heap.heapArray.size() - 1);
     }
