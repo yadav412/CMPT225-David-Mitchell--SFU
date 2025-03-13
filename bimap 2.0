@@ -1,0 +1,160 @@
+#ifndef BIMAP_H
+#define BIMAP_H
+
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <string>
+using namespace std;
+
+int nextPrime(int n);
+
+template <typename KeyType, typename ValType>
+class BiMap {
+public:
+    explicit BiMap(int size = 101) 
+        : keyToValTable(nextPrime(size)), valToKeyTable(nextPrime(size)) { 
+        makeEmpty();
+    }
+
+    void makeEmpty() {
+        currentSize = 0;
+        for (auto& entry : keyToValTable) entry.info = EMPTY;
+        for (auto& entry : valToKeyTable) entry.info = EMPTY;
+    }
+
+    int getSize() const {
+        return currentSize;
+    }
+
+    bool containsKey(const KeyType& key) const {
+        return isActive(findPosKey(key, keyToValTable));
+    }
+
+    bool containsVal(const ValType& val) const {
+        return isActive(findPosVal(val, valToKeyTable));
+    }
+
+    bool insert(const KeyType& key, const ValType& val) {
+        if (containsKey(key) || containsVal(val))
+            return false;
+
+        int keyPos = findPosKey(key, keyToValTable);
+        int valPos = findPosVal(val, valToKeyTable);
+
+        if (keyToValTable[keyPos].info != DELETED) ++currentSize;
+        if (valToKeyTable[valPos].info != DELETED) ++currentSize;
+
+        keyToValTable[keyPos] = HashEntry{key, val, ACTIVE};
+        valToKeyTable[valPos] = HashEntry{val, key, ACTIVE}; // Corrected order
+
+        if (currentSize > keyToValTable.size() / 2) rehash();
+        
+        return true;
+    }
+
+    bool removeKey(const KeyType& key) {
+        int keyPos = findPosKey(key, keyToValTable);
+        if (!isActive(keyPos)) return false;
+
+        ValType val = keyToValTable[keyPos].value;
+        int valPos = findPosVal(val, valToKeyTable);
+
+        keyToValTable[keyPos].info = DELETED;
+        valToKeyTable[valPos].info = DELETED;
+        
+        return true;
+    }
+
+    bool removeVal(const ValType& val) {
+        int valPos = findPosVal(val, valToKeyTable);
+        if (!isActive(valPos)) return false;
+
+        KeyType key = valToKeyTable[valPos].value;
+        int keyPos = findPosKey(key, keyToValTable);
+
+        keyToValTable[keyPos].info = DELETED;
+        valToKeyTable[valPos].info = DELETED;
+        
+        return true;
+    }
+
+    const ValType& getVal(const KeyType& key) const {
+        return keyToValTable[findPosKey(key, keyToValTable)].value;
+    }
+
+    const KeyType& getKey(const ValType& val) const {
+        return valToKeyTable[findPosVal(val, valToKeyTable)].value;
+    }
+
+private:
+    enum EntryType { ACTIVE, EMPTY, DELETED };
+
+    struct HashEntry {
+        KeyType key;
+        ValType value;
+        EntryType info;
+
+        HashEntry(const KeyType& k = KeyType{}, const ValType& v = ValType{}, EntryType i = EMPTY)
+            : key{k}, value{v}, info{i} {}
+    };
+
+    vector<HashEntry> keyToValTable;
+    vector<HashEntry> valToKeyTable;
+    int currentSize;
+
+    bool isActive(int currentPos) const {
+        return keyToValTable[currentPos].info == ACTIVE;
+    }
+
+    int findPosKey(const KeyType& key, const vector<HashEntry>& table) const {
+        int offset = 1;
+        int currentPos = myhash(key, table.size());
+
+        while (table[currentPos].info != EMPTY && table[currentPos].key != key) {
+            currentPos += offset; 
+            offset += 2;
+            if (currentPos >= table.size()) currentPos -= table.size();
+        }
+        return currentPos;
+    }
+
+    int findPosVal(const ValType& val, const vector<HashEntry>& table) const {
+        int offset = 1;
+        int currentPos = myhash(val, table.size());
+
+        while (table[currentPos].info != EMPTY && table[currentPos].value != val) {
+            currentPos += offset;  
+            offset += 2;
+            if (currentPos >= table.size()) currentPos -= table.size();
+        }
+        return currentPos;
+    }
+
+    void rehash() {
+        vector<HashEntry> oldKeyToValTable = keyToValTable;
+        vector<HashEntry> oldValToKeyTable = valToKeyTable;
+
+        keyToValTable.resize(nextPrime(2 * oldKeyToValTable.size()));
+        valToKeyTable.resize(nextPrime(2 * oldValToKeyTable.size()));
+
+        for (auto& entry : keyToValTable) entry.info = EMPTY;
+        for (auto& entry : valToKeyTable) entry.info = EMPTY;
+
+        currentSize = 0;
+        for (auto& entry : oldKeyToValTable)
+            if (entry.info == ACTIVE) insert(entry.key, entry.value);
+    }
+
+    size_t myhash(const KeyType& x, size_t tableSize) const {
+        static hash<KeyType> hf;
+        return hf(x) % tableSize;
+    }
+
+    size_t myhash(const ValType& x, size_t tableSize) const {
+        static hash<ValType> hf;
+        return hf(x) % tableSize;
+    }
+};
+
+#endif // BIMAP_H
