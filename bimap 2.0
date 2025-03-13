@@ -7,11 +7,31 @@
 #include <string>
 using namespace std;
 
-int nextPrime(int n);
+int nextPrime(int n)
+{
+
+    if (n <= 1) return 2;
+    
+    auto isPrime = [](int num) {
+        if (num < 2) return false;
+        if (num % 2 == 0 && num != 2) return false;
+        for (int i = 3; i * i <= num; i += 2)
+            if (num % i == 0) return false;
+        return true;
+    };
+    
+    while (!isPrime(n)) ++n;
+    return n;
+}
+
+
+;
 
 template <typename KeyType, typename ValType>
 class BiMap {
 public:
+
+
     explicit BiMap(int size = 101) 
         : keyToValTable(nextPrime(size)), valToKeyTable(nextPrime(size)) { 
         makeEmpty();
@@ -88,6 +108,19 @@ public:
     }
 
 private:
+
+    
+    size_t myhash(const KeyType& x, size_t tableSize) const {
+        static hash<KeyType> hf;
+        return hf(x) % tableSize;
+    }
+
+    size_t myhash(const ValType& x, size_t tableSize) const {
+        static hash<ValType> hf;
+        return hf(x) % tableSize;
+    }
+
+
     enum EntryType { ACTIVE, EMPTY, DELETED };
 
     struct HashEntry {
@@ -157,33 +190,3 @@ private:
 };
 
 #endif // BIMAP_H
-
-
-
-
-    size_t myhash(const KeyType& x, size_t tableSize) const {
-        static hash<KeyType> hf;
-        return hf(x) % tableSize;
-    }
-
-    size_t myhash(const ValType& x, size_t tableSize) const {
-        static hash<ValType> hf;
-        return hf(x) % tableSize;
-    }
-
-
-
-
-    if (n <= 1) return 2;
-    
-    auto isPrime = [](int num) {
-        if (num < 2) return false;
-        if (num % 2 == 0 && num != 2) return false;
-        for (int i = 3; i * i <= num; i += 2)
-            if (num % i == 0) return false;
-        return true;
-    };
-    
-    while (!isPrime(n)) ++n;
-    return n;
-}
