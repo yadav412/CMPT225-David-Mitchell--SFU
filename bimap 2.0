@@ -46,7 +46,7 @@ public:
         if (valToKeyTable[valPos].info != DELETED) ++currentSize;
 
         keyToValTable[keyPos] = HashEntry{key, val, ACTIVE};
-        valToKeyTable[valPos] = HashEntry{val, key, ACTIVE}; // Corrected order
+        valToKeyTable[valPos] = ReverseHashEntry{val, key, ACTIVE}; // Fixed type order
 
         if (currentSize > keyToValTable.size() / 2) rehash();
         
@@ -70,7 +70,7 @@ public:
         int valPos = findPosVal(val, valToKeyTable);
         if (!isActive(valPos)) return false;
 
-        KeyType key = valToKeyTable[valPos].value;
+        KeyType key = valToKeyTable[valPos].key; // Fixed incorrect assignment
         int keyPos = findPosKey(key, keyToValTable);
 
         keyToValTable[keyPos].info = DELETED;
@@ -84,77 +84,4 @@ public:
     }
 
     const KeyType& getKey(const ValType& val) const {
-        return valToKeyTable[findPosVal(val, valToKeyTable)].value;
-    }
-
-private:
-    enum EntryType { ACTIVE, EMPTY, DELETED };
-
-    struct HashEntry {
-        KeyType key;
-        ValType value;
-        EntryType info;
-
-        HashEntry(const KeyType& k = KeyType{}, const ValType& v = ValType{}, EntryType i = EMPTY)
-            : key{k}, value{v}, info{i} {}
-    };
-
-    vector<HashEntry> keyToValTable;
-    vector<HashEntry> valToKeyTable;
-    int currentSize;
-
-    bool isActive(int currentPos) const {
-        return keyToValTable[currentPos].info == ACTIVE;
-    }
-
-    int findPosKey(const KeyType& key, const vector<HashEntry>& table) const {
-        int offset = 1;
-        int currentPos = myhash(key, table.size());
-
-        while (table[currentPos].info != EMPTY && table[currentPos].key != key) {
-            currentPos += offset; 
-            offset += 2;
-            if (currentPos >= table.size()) currentPos -= table.size();
-        }
-        return currentPos;
-    }
-
-    int findPosVal(const ValType& val, const vector<HashEntry>& table) const {
-        int offset = 1;
-        int currentPos = myhash(val, table.size());
-
-        while (table[currentPos].info != EMPTY && table[currentPos].value != val) {
-            currentPos += offset;  
-            offset += 2;
-            if (currentPos >= table.size()) currentPos -= table.size();
-        }
-        return currentPos;
-    }
-
-    void rehash() {
-        vector<HashEntry> oldKeyToValTable = keyToValTable;
-        vector<HashEntry> oldValToKeyTable = valToKeyTable;
-
-        keyToValTable.resize(nextPrime(2 * oldKeyToValTable.size()));
-        valToKeyTable.resize(nextPrime(2 * oldValToKeyTable.size()));
-
-        for (auto& entry : keyToValTable) entry.info = EMPTY;
-        for (auto& entry : valToKeyTable) entry.info = EMPTY;
-
-        currentSize = 0;
-        for (auto& entry : oldKeyToValTable)
-            if (entry.info == ACTIVE) insert(entry.key, entry.value);
-    }
-
-    size_t myhash(const KeyType& x, size_t tableSize) const {
-        static hash<KeyType> hf;
-        return hf(x) % tableSize;
-    }
-
-    size_t myhash(const ValType& x, size_t tableSize) const {
-        static hash<ValType> hf;
-        return hf(x) % tableSize;
-    }
-};
-
-#endif // BIMAP_H
+        return valToKeyTable[findPosVal(val, valToKeyTable)].key; // Fixe
