@@ -1,0 +1,21 @@
+
+
+
+
+//Starting build...
+/usr/bin/g++ -fdiagnostics-color=always -g '/home/ysa306/Desktop/ans 2/TestBiMap.cpp' -o '/home/ysa306/Desktop/ans 2/TestBiMap'
+In file included from /home/ysa306/Desktop/ans 2/TestBiMap.cpp:2:
+/home/ysa306/Desktop/ans 2/BiMap.h: In instantiation of ‘bool BiMap<KeyType, ValType>::insert(const KeyType&, const ValType&) [with KeyType = std::__cxx11::basic_string<char>; ValType = int]’:
+/home/ysa306/Desktop/ans 2/TestBiMap.cpp:10:17:   required from here
+/home/ysa306/Desktop/ans 2/BiMap.h:52:31: error: no matching function for call to ‘BiMap<std::__cxx11::basic_string<char>, int>::HashEntry::HashEntry(<brace-enclosed initializer list>)’
+   52 |         valToKeyTable[valPos] = HashEntry{val, key, ACTIVE};
+      |         ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ysa306/Desktop/ans 2/BiMap.h:124:9: note: candidate: ‘BiMap<KeyType, ValType>::HashEntry::HashEntry(const KeyType&, const ValType&, BiMap<KeyType, ValType>::EntryType) [with KeyType = std::__cxx11::basic_string<char>; ValType = int]’
+  124 |         HashEntry(const KeyType& k = KeyType{}, const ValType& v = ValType{}, EntryType i = EMPTY)
+      |         ^~~~~~~~~
+/home/ysa306/Desktop/ans 2/BiMap.h:124:34: note:   no known conversion for argument 1 from ‘const int’ to ‘const std::__cxx11::basic_string<char>&’
+  124 |         HashEntry(const KeyType& k = KeyType{}, const ValType& v = ValType{}, EntryType i = EMPTY)
+      |                   ~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+/home/ysa306/Desktop/ans 2/BiMap.h:119:12: note: candidate: ‘BiMap<std::__cxx11::basic_string<char>, int>::HashEntry::HashEntry(const BiMap<std::__cxx11::basic_string<char>, int>::HashEntry&)’
+  119 |     struct HashEntry {
+      |            ^~~~~~~~~
