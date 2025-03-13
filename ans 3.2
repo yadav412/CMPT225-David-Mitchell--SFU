@@ -1,0 +1,146 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>  // Changed to unordered_map for efficiency
+
+using namespace std;
+
+class IndPQ {
+private:
+    class Heap {
+    public:
+        vector<pair<int, string>> heapArray;
+        unordered_map<string, size_t> M; // Map taskID to index in heap
+
+        void percolate_up(size_t index) {
+            while (index > 0) {
+                size_t parent = (index - 1) / 2;
+                if (heapArray[index].first >= heapArray[parent].first) break;
+                swap(heapArray[index], heapArray[parent]);
+                M[heapArray[index].second] = index;
+                M[heapArray[parent].second] = parent;
+                index = parent;
+            }
+        }
+
+        void percolate_down(size_t index) {
+            size_t size = heapArray.size();
+            while (2 * index + 1 < size) {
+                size_t left = 2 * index + 1, right = 2 * index + 2, smallest = left;
+                if (right < size && heapArray[right].first < heapArray[left].first) {
+                    smallest = right;
+                }
+                if (heapArray[index].first <= heapArray[smallest].first) break;
+                swap(heapArray[index], heapArray[smallest]);
+                M[heapArray[index].second] = index;
+                M[heapArray[smallest].second] = smallest;
+                index = smallest;
+            }
+        }
+
+        void insert(const string& taskID, int priority) {
+            if (M.find(taskID) != M.end()) {
+                throw runtime_error("Task ID already exists");
+            }
+            heapArray.emplace_back(priority, taskID);
+            size_t index = heapArray.size() - 1;
+            M[taskID] = index;
+            percolate_up(index);
+        }
+
+        string deleteMin() {
+            if (heapArray.empty()) {
+                throw out_of_range("Heap is empty");
+            }
+            string minTask = heapArray[0].second;
+            M.erase(minTask);
+            if (heapArray.size() == 1) {
+                heapArray.pop_back();
+                return minTask;
+            }
+            heapArray[0] = heapArray.back();
+            M[heapArray[0].second] = 0;
+            heapArray.pop_back();
+            percolate_down(0);
+            return minTask;
+        }
+
+        void updatePriority(const string& taskID, int newPriority) {
+            auto it = M.find(taskID);
+            if (it == M.end()) {
+                throw runtime_error("Task ID not found");
+            }
+            size_t index = it->second;
+            int oldPriority = heapArray[index].first;
+            heapArray[index].first = newPriority;
+            if (newPriority < oldPriority) {
+                percolate_up(index);
+            } else {
+                percolate_down(index);
+            }
+        }
+
+        void remove(const string& taskID) {
+            auto it = M.find(taskID);
+            if (it == M.end()) {
+                throw runtime_error("Task ID not found");
+            }
+            size_t index = it->second;
+            M.erase(taskID);
+            if (index == heapArray.size() - 1) {
+                heapArray.pop_back();
+                return;
+            }
+            heapArray[index] = heapArray.back();
+            M[heapArray[index].second] = index;
+            heapArray.pop_back();
+            percolate_up(index);
+            percolate_down(index);
+        }
+    };
+
+    Heap heap;
+
+public:
+    IndPQ() {} // Constructor added
+
+    void insert(const string& taskID, int priority) {
+        heap.insert(taskID, priority);
+    }
+
+    string deleteMin() {
+        return heap.deleteMin();
+    }
+
+    void updatePriority(const string& taskID, int newPriority) {
+        heap.updatePriority(taskID, newPriority);
+    }
+
+    void remove(const string& taskID) {
+        heap.remove(taskID);
+    }
+
+    bool isEmpty() {
+        return heap.heapArray.empty();
+    }
+
+    int size() {
+        return heap.heapArray.size();
+    }
+
+    void clear() {
+        heap.heapArray.clear();
+        heap.M.clear();
+    }
+
+    void display() {
+        if (isEmpty()) {
+            cout << "The queue is empty." << endl;
+            return;
+        }
+        cout << "Heap contents:" << endl;
+        for (const auto& pair : heap.heapArray) {
+            cout << "Task: " << pair.second << ", Priority: " << pair.first << endl;
+        }
+    }
+};
