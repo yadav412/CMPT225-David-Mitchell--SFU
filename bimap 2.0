@@ -157,3 +157,16 @@ private:
 };
 
 #endif // BIMAP_H
+
+
+
+
+    size_t myhash(const KeyType& x, size_t tableSize) const {
+        static hash<KeyType> hf;
+        return hf(x) % tableSize;
+    }
+
+    size_t myhash(const ValType& x, size_t tableSize) const {
+        static hash<ValType> hf;
+        return hf(x) % tableSize;
+    }
