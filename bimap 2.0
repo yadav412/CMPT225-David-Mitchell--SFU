@@ -70,7 +70,7 @@ public:
         int valPos = findPosVal(val, valToKeyTable);
         if (!isActive(valPos)) return false;
 
-        KeyType key = valToKeyTable[valPos].key; // Fixed incorrect assignment
+        KeyType key = valToKeyTable[valPos].value; // Fixed incorrect assignment
         int keyPos = findPosKey(key, keyToValTable);
 
         keyToValTable[keyPos].info = DELETED;
@@ -84,7 +84,7 @@ public:
     }
 
     const KeyType& getKey(const ValType& val) const {
-        return valToKeyTable[findPosVal(val, valToKeyTable)].key; // Fixed incorrect return
+        return valToKeyTable[findPosVal(val, valToKeyTable)].value; // Fixed incorrect return
     }
 
 private:
@@ -157,4 +157,3 @@ private:
 };
 
 #endif // BIMAP_H
-
