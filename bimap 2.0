@@ -84,4 +84,77 @@ public:
     }
 
     const KeyType& getKey(const ValType& val) const {
-        return valToKeyTable[findPosVal(val, valToKeyTable)].key; // Fixe
+        return valToKeyTable[findPosVal(val, valToKeyTable)].key; // Fixed incorrect return
+    }
+
+private:
+    enum EntryType { ACTIVE, EMPTY, DELETED };
+
+    struct HashEntry {
+        KeyType key;
+        ValType value;
+        EntryType info;
+
+        HashEntry(const KeyType& k = KeyType{}, const ValType& v = ValType{}, EntryType i = EMPTY)
+            : key{k}, value{v}, info{i} {}
+    };
+
+    struct ReverseHashEntry { // Added struct for valToKeyTable
+        ValType key;
+        KeyType value;
+        EntryType info;
+
+        ReverseHashEntry(const ValType& k = ValType{}, const KeyType& v = KeyType{}, EntryType i = EMPTY)
+            : key{k}, value{v}, info{i} {}
+    };
+
+    vector<HashEntry> keyToValTable;
+    vector<ReverseHashEntry> valToKeyTable;
+    int currentSize;
+
+    bool isActive(int currentPos) const {
+        return keyToValTable[currentPos].info == ACTIVE;
+    }
+
+    int findPosKey(const KeyType& key, const vector<HashEntry>& table) const {
+        int offset = 1;
+        int currentPos = myhash(key, table.size());
+
+        while (table[currentPos].info != EMPTY && table[currentPos].key != key) {
+            currentPos += offset; 
+            offset += 2;
+            if (currentPos >= table.size()) currentPos -= table.size();
+        }
+        return currentPos;
+    }
+
+    int findPosVal(const ValType& val, const vector<ReverseHashEntry>& table) const {
+        int offset = 1;
+        int currentPos = myhash(val, table.size());
+
+        while (table[currentPos].info != EMPTY && table[currentPos].key != val) {
+            currentPos += offset;  
+            offset += 2;
+            if (currentPos >= table.size()) currentPos -= table.size();
+        }
+        return currentPos;
+    }
+
+    void rehash() {
+        vector<HashEntry> oldKeyToValTable = keyToValTable;
+        vector<ReverseHashEntry> oldValToKeyTable = valToKeyTable;
+
+        keyToValTable.resize(nextPrime(2 * oldKeyToValTable.size()));
+        valToKeyTable.resize(nextPrime(2 * oldValToKeyTable.size()));
+
+        for (auto& entry : keyToValTable) entry.info = EMPTY;
+        for (auto& entry : valToKeyTable) entry.info = EMPTY;
+
+        currentSize = 0;
+        for (auto& entry : oldKeyToValTable)
+            if (entry.info == ACTIVE) insert(entry.key, entry.value);
+    }
+};
+
+#endif // BIMAP_H
+
